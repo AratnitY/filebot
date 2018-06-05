@@ -3,6 +3,7 @@ package net.filebot.media;
 import java.io.File;
 
 import net.filebot.mediainfo.MediaInfo;
+import net.filebot.util.SystemProperty;
 
 public enum MediaCharacteristicsParser {
 
