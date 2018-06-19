@@ -63,7 +63,7 @@ public class XAttrUtil {
 
 	protected static String decodeString(ByteBuffer bb) {
 		// handle null-terminated String values gracefully
-		return UTF_8.decode(bb).codePoints().takeWhile(c -> c != 0).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+		return UTF_8.decode(bb).codePoints().filter(c -> c != 0).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 	}
 
 	protected static List<String> decodeStringSequence(ByteBuffer bb) {

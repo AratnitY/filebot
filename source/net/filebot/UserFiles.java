@@ -2,7 +2,6 @@ package net.filebot;
 
 import static java.util.Arrays.*;
 import static java.util.Collections.*;
-import static java.util.stream.Collectors.*;
 import static net.filebot.Logging.*;
 import static net.filebot.Settings.*;
 import static net.filebot.similarity.Normalization.*;
@@ -16,13 +15,14 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 
 import javax.swing.JFileChooser;
+
+import com.sun.jna.platform.FileUtils;
 
 import net.filebot.platform.mac.MacAppUtilities;
 import net.filebot.util.FileUtilities;
@@ -32,12 +32,10 @@ public class UserFiles {
 
 	public static void trash(File file) throws IOException {
 		// use system trash if possible
-		if (Desktop.getDesktop().isSupported(Desktop.Action.MOVE_TO_TRASH)) {
+		if (FileUtils.getInstance().hasTrash()) {
 			try {
-				if (Desktop.getDesktop().moveToTrash(file)) {
-					return;
-				}
-				debug.log(Level.WARNING, message("Failed to move file to trash", file));
+				FileUtils.getInstance().moveToTrash(new File[] { file });
+				return;
 			} catch (Exception e) {
 				debug.log(Level.WARNING, e::toString);
 			}
@@ -50,18 +48,6 @@ public class UserFiles {
 	}
 
 	public static void revealFiles(Collection<File> files) {
-		// try to reveal file in folder
-		if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
-			files.stream().collect(groupingBy(File::getParentFile, LinkedHashMap::new, toList())).forEach((parent, children) -> {
-				try {
-					Desktop.getDesktop().browseFileDirectory(children.get(children.size() - 1));
-				} catch (Exception e) {
-					debug.log(Level.WARNING, e::toString);
-				}
-			});
-			return;
-		}
-
 		// if we can't reveal the file in folder, just reveal the parent folder
 		files.stream().map(it -> it.getParentFile()).distinct().forEach(it -> {
 			try {

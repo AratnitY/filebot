@@ -4,7 +4,6 @@ import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
 
 import java.awt.Image;
-import java.awt.image.BaseMultiResolutionImage;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -47,11 +46,7 @@ public final class ResourceManager {
 
 	private static Image getMultiResolutionImage(URL[] resource) {
 		try {
-			Image[] image = new Image[resource.length];
-			for (int i = 0; i < image.length; i++) {
-				image[i] = ImageIO.read(resource[i]);
-			}
-			return new BaseMultiResolutionImage(image);
+			return ImageIO.read(resource[0]);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

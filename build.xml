@@ -78,9 +78,10 @@
 		<attribute name="dest" />
 		<sequential>
 			<exec executable="powershell" dir="${dir.cache}" failonerror="yes">
+				<env key="PROCESSOR_ARCHITECTURE" value="x86" />
 				<arg line="get-java" />
 			</exec>
-			<untar src="${dir.cache}/jre-${jre.version}_windows-x64_bin.tar.gz" dest="@{dest}" compression="gzip">
+			<untar src="${dir.cache}/jre-${jre.major}u${jre.build}-windows-i586.tar.gz" dest="@{dest}" compression="gzip">
 				<patternset>
 					<exclude name="**/dtplugin/**" />
 					<exclude name="**/plugin2/**" />
@@ -96,7 +97,7 @@
 		<attribute name="dest" />
 		<sequential>
 			<exec executable="get-java.sh" dir="${dir.cache}" failonerror="yes" />
-			<untar src="${dir.cache}/jre-${jre.version}_osx-x64_bin.tar.gz" dest="@{dest}" compression="gzip">
+			<untar src="${dir.cache}/jre-${jre.major}u${jre.build}-macosx-x64.tar.gz" dest="@{dest}" compression="gzip">
 				<!-- MAS validation does not like certain files included in the JRE -->
 				<patternset>
 					<exclude name="**/deploy/**" />
@@ -106,7 +107,6 @@
 					<!-- libjfxwebkit.dylib has many dependencies to deprecated librararies that cause issues with MAS review -->
 					<exclude name="**/libjfxwebkit.dylib" />
 				</patternset>
-				<cutdirsmapper dirs="1" />
 			</untar>
 		</sequential>
 	</macrodef>
@@ -254,7 +254,7 @@
 			<librarypath dir="${dir.lib}/native/mac-x86_64" />
 
 			<arch name="x86_64" />
-			<runtime dir="${dir.staging}/jre-${java.version}.jre/Contents/Home">
+			<runtime dir="${dir.staging}/jre1.${jre.major}.0_${jre.build}.jre/Contents/Home">
 				<include name="**/*" />
 			</runtime>
 
@@ -308,7 +308,7 @@
 		<replace file="${path.app.jre}/Contents/Info.plist" token="com.oracle.java.${jre.version}.jre" value="${application.identifier}.jre" encoding="UTF-8" summary="true" />
 
 		<!-- fix broken symlink -->
-		<copy file="${dir.staging}/jre-${java.version}.jre/Contents/Home/lib/jli/libjli.dylib" tofile="${path.app.jre}/Contents/MacOS/libjli.dylib" overwrite="yes" verbose="yes" failonerror="yes" />
+		<copy file="${dir.staging}/jre1.${jre.major}.0_${jre.build}.jre/Contents/Home/lib/jli/libjli.dylib" tofile="${path.app.jre}/Contents/MacOS/libjli.dylib" overwrite="yes" verbose="yes" failonerror="yes" />
 
 		<!-- fix permissions (fpcalc and jspawnhelper be executable and signed with inherit entitlements) -->
 		<chmod perm="+x">
@@ -373,7 +373,7 @@
 
 		<bundleapp jvmrequired="${jvm.version}" minimumsystemversion="${mac.version}" outputdirectory="${dir.staging}" executablename="${package.name}.launcher" name="${application.name}" displayname="${application.name}.launcher" version="${revision}" shortversion="${application.version}" identifier="${package.identifier}" mainclassname="${main.class}" icon="${dir.installer}/icons/filebot.icns" copyright="${tstamp.year} ${package.company}" applicationcategory="${mac.application.category}" highresolutioncapable="true" supportsautomaticgraphicsswitching="true">
 			<arch name="x86_64" />
-			<runtime dir="${dir.staging}/jre-${java.version}.jre/Contents/Home">
+			<runtime dir="${dir.staging}/jre1.${jre.major}.0_${jre.build}.jre/Contents/Home">
 				<include name="**/*" />
 			</runtime>
 
@@ -769,7 +769,7 @@
 		</copy>
 
 		<!-- compile -->
-		<javac srcdir="${dir.source}" destdir="${dir.build}" release="${jvm.version}" encoding="utf-8" debug="yes" debuglevel="lines,vars,source" includeAntRuntime="no">
+		<javac srcdir="${dir.source}" destdir="${dir.build}" target="${jvm.version}" source="${jvm.version}" encoding="utf-8" debug="yes" debuglevel="lines,vars,source" includeAntRuntime="no">
 			<classpath>
 				<fileset dir="${dir.dist}/lib" />
 			</classpath>

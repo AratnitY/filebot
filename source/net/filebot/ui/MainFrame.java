@@ -12,7 +12,6 @@ import static net.filebot.Settings.*;
 import static net.filebot.util.ui.SwingUI.*;
 
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.Dialog.ModalExclusionType;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -220,11 +219,7 @@ public class MainFrame extends JFrame {
 					selectEnabled = true;
 
 					// bring window to front when drag-and-drop operation is in progress
-					if (Desktop.getDesktop().isSupported(Desktop.Action.APP_REQUEST_FOREGROUND)) {
-						Desktop.getDesktop().requestForeground(true);
-					} else {
-						SwingUtilities.getWindowAncestor(((DropTarget) dtde.getSource()).getComponent()).toFront();
-					}
+					SwingUtilities.getWindowAncestor(((DropTarget) dtde.getSource()).getComponent()).toFront();
 				});
 			}
 

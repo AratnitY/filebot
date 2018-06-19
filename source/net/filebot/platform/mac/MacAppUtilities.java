@@ -2,12 +2,10 @@ package net.filebot.platform.mac;
 
 import static ca.weblite.objc.util.CocoaUtils.*;
 
-import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.SecondaryLoop;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.desktop.QuitStrategy;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,20 +93,6 @@ public class MacAppUtilities {
 	public static void initializeApplication(JMenuBar appMenuBar, Consumer<List<File>> openFileHandler) {
 		// improved UI defaults
 		UIManager.put("TitledBorder.border", UIManager.getBorder("InsetBorder.aquaVariant"));
-
-		// make sure Application Quit Events get forwarded to normal Window Listeners
-		Desktop.getDesktop().setQuitStrategy(QuitStrategy.CLOSE_ALL_WINDOWS);
-
-		// set global menu bar
-		Desktop.getDesktop().setDefaultMenuBar(appMenuBar);
-
-		// set open file handler
-		Desktop.getDesktop().setOpenFileHandler(evt -> {
-			List<File> files = evt.getFiles();
-			if (files.size() > 0) {
-				openFileHandler.accept(files);
-			}
-		});
 	}
 
 	public static boolean isLockedFolder(File folder) {

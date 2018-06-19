@@ -8,7 +8,6 @@ import static net.filebot.util.RegularExpressions.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.lang.ref.Cleaner;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -27,12 +26,10 @@ import net.filebot.media.MediaCharacteristics;
 public class MediaInfo implements MediaCharacteristics {
 
 	private Pointer handle;
-	private Cleaner.Cleanable cleanable;
 
 	public MediaInfo() {
 		try {
 			handle = MediaInfoLibrary.INSTANCE.New();
-			cleanable = cleaner.register(this, new Finalizer(handle));
 		} catch (LinkageError e) {
 			throw new MediaInfoException(e);
 		}
@@ -228,7 +225,22 @@ public class MediaInfo implements MediaCharacteristics {
 
 	@Override
 	public synchronized void close() {
-		cleanable.clean();
+		MediaInfoLibrary.INSTANCE.Close(handle);
+	}
+
+	public synchronized void dispose() {
+		if (handle == null) {
+			return;
+		}
+
+		// delete handle
+		MediaInfoLibrary.INSTANCE.Delete(handle);
+		handle = null;
+	}
+
+	@Override
+	protected void finalize() {
+		dispose();
 	}
 
 	public enum StreamKind {
@@ -310,26 +322,6 @@ public class MediaInfo implements MediaCharacteristics {
 	public static Map<StreamKind, List<Map<String, String>>> snapshot(File file) throws IOException {
 		try (MediaInfo mi = new MediaInfo().open(file)) {
 			return mi.snapshot();
-		}
-	}
-
-	/**
-	 * Use {@link Cleaner} instead of Object.finalize()
-	 */
-	private static final Cleaner cleaner = Cleaner.create();
-
-	private static class Finalizer implements Runnable {
-
-		private Pointer handle;
-
-		public Finalizer(Pointer handle) {
-			this.handle = handle;
-		}
-
-		@Override
-		public void run() {
-			MediaInfoLibrary.INSTANCE.Close(handle);
-			MediaInfoLibrary.INSTANCE.Delete(handle);
 		}
 	}
 

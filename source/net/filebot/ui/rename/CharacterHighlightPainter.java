@@ -15,7 +15,6 @@ import javax.swing.plaf.TextUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
-import javax.swing.text.Position.Bias;
 
 import net.filebot.util.ui.GradientStyle;
 
@@ -36,8 +35,8 @@ class CharacterHighlightPainter implements Highlighter.HighlightPainter {
 		try {
 			// determine locations
 			TextUI mapper = c.getUI();
-			Rectangle2D p1 = mapper.modelToView2D(c, offset1, Bias.Backward);
-			Rectangle2D p2 = mapper.modelToView2D(c, offset2, Bias.Backward);
+			Rectangle2D p1 = mapper.modelToView(c, offset1);
+			Rectangle2D p2 = mapper.modelToView(c, offset2);
 
 			Rectangle2D r = p1.createUnion(p2);
 			double w = r.getWidth() + 1;
