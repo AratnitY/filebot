@@ -548,9 +548,9 @@
 
 	<target name="appx" description="Build Windows 10 package" depends="revision">
 		<antcall target="appx-arch">
-			<param name="arch" value="x64" />
-			<param name="arch.env" value="AMD64" />
-			<param name="arch.jre" value="x64" />
+			<param name="arch" value="x86" />
+			<param name="arch.env" value="x86" />
+			<param name="arch.jre" value="i586" />
 		</antcall>
 
 		<!-- 32-bit Windows is not supported by Oracle JDK so there are no JRE builds -->
